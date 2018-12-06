@@ -127,18 +127,18 @@ function Board(){
     
     this.move = function(oldpos, newpos){
         switch(this.board[oldpos]){
-            case 1: 
-            case 2: 
-            case 3: 
-            case 4: 
-            case 5: 
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12: 
+            case pieces.wP: 
+            case pieces.wR: 
+            case pieces.wN: 
+            case pieces.wB: 
+            case pieces.wQ: 
+            case pieces.wK:
+            case pieces.bP:
+            case pieces.bR:
+            case pieces.bN:
+            case pieces.bB:
+            case pieces.bQ:
+            case pieces.bK: 
         }
     }
 }
