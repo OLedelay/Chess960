@@ -128,6 +128,7 @@ function Board(){
     this.move = function(oldpos, newpos){
         switch(this.board[oldpos]){
             case pieces.wP: 
+            
             case pieces.wR: 
             case pieces.wN: 
             case pieces.wB: 
