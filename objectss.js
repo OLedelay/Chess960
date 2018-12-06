@@ -138,7 +138,7 @@ function Board(){
             case pieces.bN:
             case pieces.bB:
             case pieces.bQ:
-            case pieces.bK:  
+            case pieces.bK: 
         }
     }
 }
