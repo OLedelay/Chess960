@@ -156,27 +156,33 @@ function Board() {
             
             switch (this.board[oldpos]) { // !isWhite(newpos) for white, isWhite||isEmpty(newpos) for black
                 case pieces.wP:
-                    if (newpos <= oldpos - 9 && newpos >= oldpos - 11 && !isWhite(newpos)) { //newpos is somewhere close in front of oldpos
-                        if(!sameFile && this.isEmpty(newpos)){ // can't diagonally jump to empty
+                    if (newpos <= oldpos - 9 && newpos >= oldpos - 11 && !this.isWhite(newpos)) { //newpos is somewhere close in front of oldpos
+                        if(!sameFile && this.isEmpty(newpos)){ // can't diagonally jump to empty, still needs "en passant" rule implementation
+                            return -1;
+                        }
+                        else if(sameFile && !this.isEmpty(newpos)){
                             return -1;
                         }
                         this.validMove(oldpos, newpos);
+                        if(rankOf(newpos) == 0){
+                            this.board[newpos] == pieces.wQ; //choose your own piece to be implemented
+                        }
                         return undefined;
                     }
                     break;
                 case pieces.wR:
-                    if(!isWhite(newpos)){ 
+                    if(!this.isWhite(newpos)){ 
                         if(!sameFile && sameRank){
                             if(relativeFile > 0){ 
                                 for(let i = oldpos + 1; i < newpos; i++){
-                                    if(!isEmpty(i)){ // makes sure all tiles between oldpos and newpos are empty on the same rank
+                                    if(!this.isEmpty(i)){ // makes sure all tiles between oldpos and newpos are empty on the same rank
                                         return -1;
                                     }
                                 }
                             }
                             else{
                                 for(let i = oldpos - 1; i > newpos; i--){
-                                    if(!isEmpty(i)){ // makes sure all tiles between oldpos and newpos are empty on the same rank
+                                    if(!this.isEmpty(i)){ // makes sure all tiles between oldpos and newpos are empty on the same rank
                                         return -1;
                                     }
                                 }
@@ -185,14 +191,14 @@ function Board() {
                         else if(sameFile && !sameRank){
                             if(relativeRank > 0){
                                 for(let i = oldpos + 10; i < newpos; i += 10){
-                                    if(!isEmpty(i)){ // makes sure all tiles between oldpos and newpos are empty on the same file
+                                    if(!this.isEmpty(i)){ // makes sure all tiles between oldpos and newpos are empty on the same file
                                         return -1;
                                     }
                                 }
                             }
                             else {
                                 for(let i = oldpos - 10; i < newpos; i -= 10){
-                                    if(!isEmpty(i)){ // makes sure all tiles between oldpos and newpos are empty on the same file
+                                    if(!this.isEmpty(i)){ // makes sure all tiles between oldpos and newpos are empty on the same file
                                         return -1;
                                     }
                                 }
@@ -203,7 +209,7 @@ function Board() {
                     }
                     break;
                 case pieces.wN:
-                    if(!isWhite(newpos)){
+                    if(!this.isWhite(newpos)){
                         if(relativeFile == 2 || relativeFile == -2){
                             if(relativeRank == 1 || relativeRank == -1){
                                 this.validMove(oldpos, newpos);
@@ -219,36 +225,44 @@ function Board() {
                     }
                     break;
                 case pieces.wB:
-                    if(!isWhite(newpos)){
+                    if(!this.isWhite(newpos)){
                         if(relativeFile == relativeRank){
                             if(relativeFile > 0){
                                 for(let i = oldpos + 11; i < newpos; i += 11){
-                                    if(!isEmpty(i)){ // tiles between oldpos and newpos empty
+                                    if(!this.isEmpty(i)){ // tiles between oldpos and newpos empty
                                         return -1;
                                     }
                                 }
+                                this.validMove(oldpos, newpos);
+                                return undefined;
                             }
                             else {
                                 for(let i = oldpos - 11; i > newpos; i -= 11){
-                                    if(!isEmpty(i)){ // tiles between oldpos and newpos empty
+                                    if(!this.isEmpty(i)){ // tiles between oldpos and newpos empty
                                         return -1;
                                     }
                                 }
+                                this.validMove(oldpos, newpos);
+                                return undefined;
                             }
                         } else if(relativeFile == -relativeRank){
                             if(relativeRank > 0){
                                 for(let i = oldpos + 9; i < newpos; i += 9){
-                                    if(!isEmpty(i)){ // tiles between oldpos and newpos empty
+                                    if(!this.isEmpty(i)){ // tiles between oldpos and newpos empty
                                         return -1;
                                     }
                                 }
+                                this.validMove(oldpos, newpos);
+                                return undefined;
                             }
                             else {
                                 for(let i = oldpos - 9; i > newpos; i -= 9){
-                                    if(!isEmpty(i)){ // tiles between oldpos and newpos empty
+                                    if(!this.isEmpty(i)){ // tiles between oldpos and newpos empty
                                         return -1;
                                     }
                                 }
+                                this.validMove(oldpos, newpos);
+                                return undefined;
                             }
                         }
                     }
