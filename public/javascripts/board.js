@@ -5,16 +5,16 @@ var pieces = {
 
 var piecesGap = 6;
 
-var position = {
-    A8: 21, B8: 22, C8: 23, D8: 24, E8: 25, F8: 26, G8: 27, H8: 28,
-    A7: 31, B7: 32, C7: 33, D7: 34, E7: 35, F7: 36, G7: 37, H7: 38,
-    A6: 41, B6: 42, C6: 43, D6: 44, E6: 45, F6: 46, G6: 47, H6: 48,
-    A5: 51, B5: 52, C5: 53, D5: 54, E5: 55, F5: 56, G5: 57, H5: 58,
-    A4: 61, B4: 62, C4: 63, D4: 64, E4: 65, F4: 66, G4: 67, H4: 68,
-    A3: 71, B3: 72, C3: 73, D3: 74, E3: 75, F3: 76, G3: 77, H3: 78,
-    A2: 81, B2: 82, C2: 83, D2: 84, E2: 85, F2: 86, G2: 87, H2: 88,
-    A1: 91, B1: 92, C1: 93, D1: 94, E1: 95, F1: 96, G1: 97, H1: 98,
-}
+// var position = {
+//     A8: 0, B8: 1, C8: 2, D8: 3, E8: 4, F8: 5, G8: 6, H8: 7,
+//     A7: 8, B7: 9, C7: 10, D7: 11, E7: 12, F7: 13, G7: 14, H7: 15,
+//     A6: 16, B6: 42, C6: 43, D6: 44, E6: 45, F6: 46, G6: 47, H6: 23,
+//     A5: 24, B5: 52, C5: 53, D5: 54, E5: 55, F5: 56, G5: 57, H5: 31,
+//     A4: 32, B4: 62, C4: 63, D4: 64, E4: 65, F4: 66, G4: 67, H4: 39,
+//     A3: 40, B3: 72, C3: 73, D3: 74, E3: 75, F3: 76, G3: 77, H3: 47,
+//     A2: 48, B2: 82, C2: 83, D2: 84, E2: 85, F2: 86, G2: 87, H2: 55,
+//     A1: 56, B1: 92, C1: 93, D1: 94, E1: 95, F1: 96, G1: 97, H1: 63,
+// }
 
 var rankDisplay = function (rankIndex) {
     return 8 - rankIndex;
@@ -23,13 +23,13 @@ var rankDisplay = function (rankIndex) {
 function Board() {
     this.board = (function () {
         let board = [];
-        for (let i = 0; i < 120; i++) {
+        for (let i = 0; i < 64; i++) {
             board[i] = 0;
         }
-        for (let i = 81; i <= 88; i++) {
+        for (let i = 48; i <= 55; i++) {
             board[i] = pieces.wP;
         }
-        for (let i = 31; i <= 38; i++) {
+        for (let i = 8; i <= 15; i++) {
             board[i] = pieces.bP;
         }
 
@@ -37,7 +37,7 @@ function Board() {
 
         let placement = function (num) {
             let counter = 0;
-            for (let i = 91; i < 99; i++) {
+            for (let i = 56; i < 64; i++) {
                 if (board[i] == 0) {
                     if (num == counter) {
                         return i;
@@ -62,8 +62,8 @@ function Board() {
         board[placement(0)] = pieces.wK;
         board[placement(0)] = pieces.wR;
 
-        for (i = 21; i <= 28; i++) {
-            board[i] = board[i + 70] + piecesGap;
+        for (i = 0; i <= 7; i++) {
+            board[i] = board[i + 56] + piecesGap;
         }
 
         return board;
@@ -85,9 +85,9 @@ function Board() {
             let resultFile = fileOf(position) + fileOffset;
             let resultRank = rankOf(position) + rankOffset;
             if (resultFile >= 0 && resultFile < 8 && resultRank >= 0 && resultRank < 8) {
-                return position + 10 * rankOffset + fileOffset;
+                return position + 8 * rankOffset + fileOffset;
             }
-            return 0;
+            return -1;
         }
 
         let scaryPieces;
@@ -216,7 +216,7 @@ function Board() {
 
             let wKPosition = 0;
             let bKPosition = 0;
-            for (let i = 21; i <= 98; i++) {
+            for (let i = 0; i <= 63; i++) {
                 let p = this.board[i];
                 if (p == pieces.wK) {
                     wKPosition = i;
@@ -269,14 +269,14 @@ function Board() {
                         }
                         else if (sameFile && !sameRank) {
                             if (relativeRank > 0) {
-                                for (let i = oldpos + 10; i < newpos; i += 10) {
+                                for (let i = oldpos + 8; i < newpos; i += 8) {
                                     if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same file
                                         return -1;
                                     }
                                 }
                             }
                             else {
-                                for (let i = oldpos - 10; i < newpos; i -= 10) {
+                                for (let i = oldpos - 8; i < newpos; i -= 8) {
                                     if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same file
                                         return -1;
                                     }
@@ -307,25 +307,6 @@ function Board() {
                     if (!this.isWhite(newpos) && wKSafe) {
                         if (relativeFile == relativeRank) {
                             if (relativeFile > 0) {
-                                for (let i = oldpos + 11; i < newpos; i += 11) {
-                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
-                                        return -1;
-                                    }
-                                }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
-                            }
-                            else {
-                                for (let i = oldpos - 11; i > newpos; i -= 11) {
-                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
-                                        return -1;
-                                    }
-                                }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
-                            }
-                        } else if (relativeFile == -relativeRank) {
-                            if (relativeRank > 0) {
                                 for (let i = oldpos + 9; i < newpos; i += 9) {
                                     if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
                                         return -1;
@@ -336,6 +317,25 @@ function Board() {
                             }
                             else {
                                 for (let i = oldpos - 9; i > newpos; i -= 9) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                                this.validMove(oldpos, newpos);
+                                return undefined;
+                            }
+                        } else if (relativeFile == -relativeRank) {
+                            if (relativeRank > 0) {
+                                for (let i = oldpos + 7; i < newpos; i += 7) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                                this.validMove(oldpos, newpos);
+                                return undefined;
+                            }
+                            else {
+                                for (let i = oldpos - 7; i > newpos; i -= 7) {
                                     if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
                                         return -1;
                                     }
@@ -350,25 +350,6 @@ function Board() {
                     if (!this.isWhite(newpos) && wKSafe) {
                         if (relativeFile == relativeRank) {
                             if (relativeFile > 0) {
-                                for (let i = oldpos + 11; i < newpos; i += 11) {
-                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
-                                        return -1;
-                                    }
-                                }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
-                            }
-                            else {
-                                for (let i = oldpos - 11; i > newpos; i -= 11) {
-                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
-                                        return -1;
-                                    }
-                                }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
-                            }
-                        } else if (relativeFile == -relativeRank) {
-                            if (relativeRank > 0) {
                                 for (let i = oldpos + 9; i < newpos; i += 9) {
                                     if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
                                         return -1;
@@ -379,6 +360,25 @@ function Board() {
                             }
                             else {
                                 for (let i = oldpos - 9; i > newpos; i -= 9) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                                this.validMove(oldpos, newpos);
+                                return undefined;
+                            }
+                        } else if (relativeFile == -relativeRank) {
+                            if (relativeRank > 0) {
+                                for (let i = oldpos + 7; i < newpos; i += 7) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                                this.validMove(oldpos, newpos);
+                                return undefined;
+                            }
+                            else {
+                                for (let i = oldpos - 7; i > newpos; i -= 7) {
                                     if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
                                         return -1;
                                     }
@@ -404,14 +404,14 @@ function Board() {
                         }
                         else if (sameFile && !sameRank) {
                             if (relativeRank > 0) {
-                                for (let i = oldpos + 10; i < newpos; i += 10) {
+                                for (let i = oldpos + 8; i < newpos; i += 8) {
                                     if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same file
                                         return -1;
                                     }
                                 }
                             }
                             else {
-                                for (let i = oldpos - 10; i < newpos; i -= 10) {
+                                for (let i = oldpos - 8; i < newpos; i -= 8) {
                                     if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same file
                                         return -1;
                                     }
@@ -444,27 +444,23 @@ console.log(baa.board.toString())
 
 
 function fileOf(index) {
-    if (index < 21 || index > 98) {
+    if (index < 0 || index > 63) {
         return -1;
     }
-    let file = index % 10 - 1
-    if (file == 8) {
-        return -1;
-    }
-    return file;
+    return (index % 8);
 }
 
 function rankOf(index) {
-    if (fileOf(index) == -1) {
+    if (index < 0 || index > 63) {
         return -1;
     }
-    return Math.floor(index / 10) - 2;
+    return Math.floor(index / 8);
 }
 
 function indexOf(file, rank) {
     if (rank < 0 || rank > 7 || file < 0 || file > 7) {
         return 0;
     }
-    return (rank * 10 + file + 21);
+    return (rank * 8 + file);
 }
 
