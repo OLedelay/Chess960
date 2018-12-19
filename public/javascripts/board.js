@@ -120,7 +120,7 @@ function Board() {
         }
         // sameRank to the right
         for (let i = 1; i < 8; i++) {
-            let piece = board[offset(pos, i, 0)];
+            let piece = this.board[offset(pos, i, 0)];
             if (piece > pieces.EMPTY) {
                 if (piece == scaryPieces.Rook || piece == scaryPieces.Queen) {
                     return false;
@@ -130,7 +130,7 @@ function Board() {
         }
         // sameRank to the left
         for (let i = 1; i < 8; i++) {
-            let piece = board[offset(pos, -i, 0)];
+            let piece = this.board[offset(pos, -i, 0)];
             if (piece > pieces.EMPTY) {
                 if (piece == scaryPieces.Rook || piece == scaryPieces.Queen) {
                     return false;
@@ -140,7 +140,7 @@ function Board() {
         }
         // sameFile below
         for (let i = 1; i < 8; i++) {
-            let piece = board[offset(pos, 0, i)];
+            let piece = this.board[offset(pos, 0, i)];
             if (piece > pieces.EMPTY) {
                 if (piece == scaryPieces.Rook || piece == scaryPieces.Queen) {
                     return false;
@@ -150,7 +150,7 @@ function Board() {
         }
         // sameFile above
         for (let i = 1; i < 8; i++) {
-            let piece = board[offset(pos, 0, -i)];
+            let piece = this.board[offset(pos, 0, -i)];
             if (piece > pieces.EMPTY) {
                 if (piece == scaryPieces.Rook || piece == scaryPieces.Queen) {
                     return false;
@@ -160,7 +160,7 @@ function Board() {
         }
         // bottom right diagonal
         for (let i = 1; i < 8; i++) {
-            let piece = board[offset(pos, i, i)];
+            let piece = this.board[offset(pos, i, i)];
             if (piece > pieces.EMPTY) {
                 if (piece == scaryPieces.Bishop || piece == scaryPieces.Queen) {
                     return false;
@@ -170,7 +170,7 @@ function Board() {
         }
         // bottom left diagonal
         for (let i = 1; i < 8; i++) {
-            let piece = board[offset(pos, -i, i)];
+            let piece = this.board[offset(pos, -i, i)];
             if (piece > pieces.EMPTY) {
                 if (piece == scaryPieces.Bishop || piece == scaryPieces.Queen) {
                     return false;
@@ -180,7 +180,7 @@ function Board() {
         }
         // top left diagonal
         for (let i = 1; i < 8; i++) {
-            let piece = board[offset(pos, -i, -i)];
+            let piece = this.board[offset(pos, -i, -i)];
             if (piece > pieces.EMPTY) {
                 if (piece == scaryPieces.Bishop || piece == scaryPieces.Queen) {
                     return false;
@@ -190,7 +190,7 @@ function Board() {
         }
         // top right diagonal
         for (let i = 1; i < 8; i++) {
-            let piece = board[offset(pos, i, -i)];
+            let piece = this.board[offset(pos, i, -i)];
             if (piece > pieces.EMPTY) {
                 if (piece == scaryPieces.Bishop || piece == scaryPieces.Queen) {
                     return false;
@@ -198,6 +198,7 @@ function Board() {
                 break;
             }
         }
+        return true;
     }
 
     this.validMove = function (oldpos, newpos) {
@@ -228,9 +229,10 @@ function Board() {
             let wKSafe = this.isSafe(wKPosition, true);
             let bKSafe = this.isSafe(bKPosition, false);
 
-            switch (this.board[oldpos]) { // !isWhite(newpos) for white, isWhite||isEmpty(newpos) for black
+
+            switch (this.board[oldpos]) {
                 case pieces.wP: // "en passant" not yet implemented
-                    if (!this.isWhite(newpos) && wKSafe) {
+                    if (!this.isWhite(newpos) && wKSafe && this.movesMade % 2 == 0) {
                         if (relativeRank == -1 && relativeFile >= -1 && relativeFile <= 1) { //newpos is somewhere close in front of oldpos
                             if (!sameFile && this.isEmpty(newpos)) { // can't diagonally jump to empty
                                 return -1;
@@ -249,8 +251,28 @@ function Board() {
                         }
                     }
                     break;
+                case pieces.bP:
+                    if ((this.isWhite(newpos) || this.isEmpty(newpos)) && bKSafe && this.movesMade % 2 == 1) {
+                        if (relativeRank == 1 && relativeFile >= -1 && relativeFile <= 1) { //newpos is somewhere close in front of oldpos
+                            if (!sameFile && this.isEmpty(newpos)) { // can't diagonally jump to empty
+                                return -1;
+                            }
+                            else if (sameFile && !this.isEmpty(newpos)) {
+                                return -1;
+                            }
+                            this.validMove(oldpos, newpos);
+                            if (rankOf(newpos) == 7) {
+                                this.board[newpos] == pieces.bQ; //free choice not yet implemented
+                            }
+                            return undefined;
+                        } else if (relativeRank == 2 && sameFile && rankOf(oldpos) == 1 && this.isEmpty(newpos)) {
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        }
+                    }
+                    break;
                 case pieces.wR:
-                    if (!this.isWhite(newpos) && wKSafe) {
+                    if (!this.isWhite(newpos) && wKSafe && this.movesMade % 2 == 0) {
                         if (!sameFile && sameRank) {
                             if (relativeFile > 0) {
                                 for (let i = oldpos + 1; i < newpos; i++) {
@@ -266,6 +288,8 @@ function Board() {
                                     }
                                 }
                             }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
                         }
                         else if (sameFile && !sameRank) {
                             if (relativeRank > 0) {
@@ -282,13 +306,69 @@ function Board() {
                                     }
                                 }
                             }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
                         }
-                        this.validMove(oldpos, newpos);
-                        return undefined;
+                    }
+                    break;
+                case pieces.bR:
+                    if ((this.isWhite(newpos) || this.isEmpty(newpos)) && bKSafe && this.movesMade % 2 == 1) {
+                        if (!sameFile && sameRank) {
+                            if (relativeFile > 0) {
+                                for (let i = oldpos + 1; i < newpos; i++) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same rank
+                                        return -1;
+                                    }
+                                }
+                            }
+                            else {
+                                for (let i = oldpos - 1; i > newpos; i--) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same rank
+                                        return -1;
+                                    }
+                                }
+                            }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        }
+                        else if (sameFile && !sameRank) {
+                            if (relativeRank > 0) {
+                                for (let i = oldpos + 8; i < newpos; i += 8) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same file
+                                        return -1;
+                                    }
+                                }
+                            }
+                            else {
+                                for (let i = oldpos - 8; i < newpos; i -= 8) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same file
+                                        return -1;
+                                    }
+                                }
+                            }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        }
                     }
                     break;
                 case pieces.wN:
-                    if (!this.isWhite(newpos) && wKSafe) {
+                    if (!this.isWhite(newpos) && wKSafe && this.movesMade % 2 == 0) {
+                        if (relativeFile == 2 || relativeFile == -2) {
+                            if (relativeRank == 1 || relativeRank == -1) {
+                                this.validMove(oldpos, newpos);
+                                return undefined;
+                            }
+                        }
+                        if (relativeRank == 2 || relativeRank == -2) {
+                            if (relativeFile == 1 || relativeFile == -1) {
+                                this.validMove(oldpos, newpos);
+                                return undefined;
+                            }
+                        }
+                    }
+                    break;
+                case pieces.bN:
+                    if ((this.isWhite(newpos) || this.isEmpty(newpos)) && bKSafe && this.movesMade % 2 == 1) {
                         if (relativeFile == 2 || relativeFile == -2) {
                             if (relativeRank == 1 || relativeRank == -1) {
                                 this.validMove(oldpos, newpos);
@@ -304,7 +384,7 @@ function Board() {
                     }
                     break;
                 case pieces.wB:
-                    if (!this.isWhite(newpos) && wKSafe) {
+                    if (!this.isWhite(newpos) && wKSafe && this.movesMade % 2 == 0) {
                         if (relativeFile == relativeRank) {
                             if (relativeFile > 0) {
                                 for (let i = oldpos + 9; i < newpos; i += 9) {
@@ -312,8 +392,6 @@ function Board() {
                                         return -1;
                                     }
                                 }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
                             }
                             else {
                                 for (let i = oldpos - 9; i > newpos; i -= 9) {
@@ -321,9 +399,9 @@ function Board() {
                                         return -1;
                                     }
                                 }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
                             }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
                         } else if (relativeFile == -relativeRank) {
                             if (relativeRank > 0) {
                                 for (let i = oldpos + 7; i < newpos; i += 7) {
@@ -331,8 +409,6 @@ function Board() {
                                         return -1;
                                     }
                                 }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
                             }
                             else {
                                 for (let i = oldpos - 7; i > newpos; i -= 7) {
@@ -340,14 +416,53 @@ function Board() {
                                         return -1;
                                     }
                                 }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
                             }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        }
+                    }
+                    break;
+                case pieces.bB:
+                    if ((this.isWhite(newpos) || this.isEmpty(newpos)) && bKSafe && this.movesMade % 2 == 1) {
+                        if (relativeFile == relativeRank) {
+                            if (relativeFile > 0) {
+                                for (let i = oldpos + 9; i < newpos; i += 9) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                            }
+                            else {
+                                for (let i = oldpos - 9; i > newpos; i -= 9) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                            }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        } else if (relativeFile == -relativeRank) {
+                            if (relativeRank > 0) {
+                                for (let i = oldpos + 7; i < newpos; i += 7) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                            }
+                            else {
+                                for (let i = oldpos - 7; i > newpos; i -= 7) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                            }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
                         }
                     }
                     break;
                 case pieces.wQ:
-                    if (!this.isWhite(newpos) && wKSafe) {
+                    if (!this.isWhite(newpos) && wKSafe && this.movesMade % 2 == 0) {
                         if (relativeFile == relativeRank) {
                             if (relativeFile > 0) {
                                 for (let i = oldpos + 9; i < newpos; i += 9) {
@@ -355,8 +470,6 @@ function Board() {
                                         return -1;
                                     }
                                 }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
                             }
                             else {
                                 for (let i = oldpos - 9; i > newpos; i -= 9) {
@@ -364,9 +477,9 @@ function Board() {
                                         return -1;
                                     }
                                 }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
                             }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
                         } else if (relativeFile == -relativeRank) {
                             if (relativeRank > 0) {
                                 for (let i = oldpos + 7; i < newpos; i += 7) {
@@ -374,8 +487,6 @@ function Board() {
                                         return -1;
                                     }
                                 }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
                             }
                             else {
                                 for (let i = oldpos - 7; i > newpos; i -= 7) {
@@ -383,9 +494,9 @@ function Board() {
                                         return -1;
                                     }
                                 }
-                                this.validMove(oldpos, newpos);
-                                return undefined;
                             }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
                         } else if (!sameFile && sameRank) {
                             if (relativeFile > 0) {
                                 for (let i = oldpos + 1; i < newpos; i++) {
@@ -401,6 +512,8 @@ function Board() {
                                     }
                                 }
                             }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
                         }
                         else if (sameFile && !sameRank) {
                             if (relativeRank > 0) {
@@ -417,30 +530,108 @@ function Board() {
                                     }
                                 }
                             }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        }
+                    }
+                    break;
+                case pieces.bQ:
+                    if ((this.isWhite(newpos) || this.isEmpty(newpos)) && bKSafe && this.movesMade % 2 == 1) {
+                        if (relativeFile == relativeRank) {
+                            if (relativeFile > 0) {
+                                for (let i = oldpos + 9; i < newpos; i += 9) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                            }
+                            else {
+                                for (let i = oldpos - 9; i > newpos; i -= 9) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                            }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        } else if (relativeFile == -relativeRank) {
+                            if (relativeRank > 0) {
+                                for (let i = oldpos + 7; i < newpos; i += 7) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                            }
+                            else {
+                                for (let i = oldpos - 7; i > newpos; i -= 7) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty
+                                        return -1;
+                                    }
+                                }
+                            }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        } else if (!sameFile && sameRank) {
+                            if (relativeFile > 0) {
+                                for (let i = oldpos + 1; i < newpos; i++) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same rank
+                                        return -1;
+                                    }
+                                }
+                            }
+                            else {
+                                for (let i = oldpos - 1; i > newpos; i--) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same rank
+                                        return -1;
+                                    }
+                                }
+                            }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        }
+                        else if (sameFile && !sameRank) {
+                            if (relativeRank > 0) {
+                                for (let i = oldpos + 8; i < newpos; i += 8) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same file
+                                        return -1;
+                                    }
+                                }
+                            }
+                            else {
+                                for (let i = oldpos - 8; i < newpos; i -= 8) {
+                                    if (!this.isEmpty(i)) { // tiles between oldpos and newpos empty on same file
+                                        return -1;
+                                    }
+                                }
+                            }
+                            this.validMove(oldpos, newpos);
+                            return undefined;
                         }
                     }
                     break;
                 case pieces.wK:
-                    if (!this.isWhite(newpos)) { // castling not yet implemented
+                    if (!this.isWhite(newpos) && this.movesMade % 2 == 0) { // castling not yet implemented
                         if (relativeFile >= -1 && relativeFile <= 1 && relativeRank >= -1 && relativeRank <= 1 && this.isSafe(newpos, true)) {
                             this.validMove(oldpos, newpos);
                             return undefined;
                         }
                     }
-                case pieces.bP:
-                case pieces.bR:
-                case pieces.bN:
-                case pieces.bB:
-                case pieces.bQ:
+                    break;
                 case pieces.bK:
+                    if ((this.isWhite(newpos) || this.isEmpty(newpos)) && this.movesMade % 2 == 0) {
+                        if (relativeFile >= -1 && relativeFile <= 1 && relativeRank >= -1 && relativeRank <= 1 && this.isSafe(newpos, false)) {
+                            this.validMove(oldpos, newpos);
+                            return undefined;
+                        }
+                    }
             }
         }
         return -1;
     }
 }
 
-let baa = new Board();
-console.log(baa.board.toString())
+// let baa = new Board();
+// console.log(baa.board.toString())
 
 
 function fileOf(index) {

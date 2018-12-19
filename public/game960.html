@@ -2,21 +2,22 @@
 <html>
     <head>
         <title>CHESS 960</title>
+        <meta charset="UTF-8">
         <link rel="stylesheet" href="stylesheets/game.css">
     </head>
     <body>
         <main>
             <section id="left">
 				<div id="top-bar">
-					<img src="playericon.png"></img>
+					<img class="icon" src="playericon.png" width="75" height="75">
 					<h3>Opponent</h3>
-					<span class="timer"></span>
+					<span id="opponent-timer" class="timer">5:00</span>
 				</div>
-                <canvas id="chess_board" width="400" height="400"></canvas>
+                <div id="chess-board"></div>
                 <div id="bottom-bar">
-					<img src="playericon.png"></img>
+					<img class="icon" src="playericon.png" width="75" height="75">
 					<h3>Anonymous</h3>
-					<span class="timer"></span>
+					<span id="player-timer" class="timer">5:00</span>
 				</div>
             </section>
             <section id="right">
@@ -34,5 +35,8 @@
                 <button type="submit">Game Analysis</button>
             </section>
         </main>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="javascripts/board.js"></script>
+        <script src="javascripts/gamepage.js"></script>
     </body>
 </html>

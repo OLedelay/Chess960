@@ -1,0 +1,107 @@
+*
+{
+	padding: 0;
+	border: 0;
+}
+
+#left
+{
+    float: left;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    padding: 10px;
+}
+
+#top-bar, #bottom-bar
+{
+    border: 2px solid black;
+    border-radius: 7px;
+    padding: 10px;
+    clear: both;
+    text-align: middle;
+    height: 97px;
+}
+
+.icon
+{
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    float: left;
+}
+
+.timer
+{
+    border: 1px solid black;
+    border-radius: 5px;
+    float: right;
+}
+
+#chess-board
+{
+float: left;
+background-color: rgb(200, 200, 200);
+border:2px solid black;
+display:grid;
+grid-template-columns: repeat(7, 64px);
+grid-template-rows: repeat(7, 64px);
+}
+
+.tile
+{
+	width: 64px;
+	height: 64px;
+	float: left;
+}
+
+.selected
+{
+    -webkit-box-shadow: inset 0px 0px 7px 7px rgba(255, 0, 0, 0.8);
+	box-shadow: inset 0px 0px 7px 7px rgba(255, 0, 0, 0.8);
+}
+
+.black
+{
+    background-color: black;
+    color:white;
+}
+
+.white
+{
+    background-color: rgb(255, 255, 255);
+    color:black;
+}
+
+.piece
+{
+	width: 64px;
+	height: 64px;
+    transition: transform 0.3s ease-in-out;
+    float: left;
+    color:red;
+}
+
+.piece.smoothmove
+{
+    transform: translate3d(0px, 0px, 0px);
+}
+
+.hover
+{
+	-webkit-box-shadow: inset 0px 0px 5px 5px rgba(255, 0, 0, 0.5);
+	box-shadow: inset 0px 0px 5px 5px rgba(255, 0, 0, 0.5);
+}
+
+.smoothfade
+{
+	-webkit-transition: box-shadow 0.25s ease-out;
+	-moz-transition: box-shadow 0.25s ease-out;
+	-ms-transition: box-shadow 0.25s ease-out;
+	-o-transition: box-shadow 0.25s ease-out;
+	transition: box-shadow 0.25s ease-out;
+
+	-webkit-transition: background-color 0.25s ease-in time;
+	-moz-transition: background-color 0.25s ease-in time;
+	-ms-transition: background-color 0.25s ease-in time;
+	-o-transition: background-color 0.25s ease-in time;
+	transition: background-color 0.25s ease-in time;
+}
