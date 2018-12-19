@@ -3,27 +3,13 @@ var pieces = {
     bP: 7, bR: 8, bN: 9, bB: 10, bQ: 11, bK: 12
 };
 
-var piecesGap = 6;
-
-// var position = {
-//     A8: 0, B8: 1, C8: 2, D8: 3, E8: 4, F8: 5, G8: 6, H8: 7,
-//     A7: 8, B7: 9, C7: 10, D7: 11, E7: 12, F7: 13, G7: 14, H7: 15,
-//     A6: 16, B6: 42, C6: 43, D6: 44, E6: 45, F6: 46, G6: 47, H6: 23,
-//     A5: 24, B5: 52, C5: 53, D5: 54, E5: 55, F5: 56, G5: 57, H5: 31,
-//     A4: 32, B4: 62, C4: 63, D4: 64, E4: 65, F4: 66, G4: 67, H4: 39,
-//     A3: 40, B3: 72, C3: 73, D3: 74, E3: 75, F3: 76, G3: 77, H3: 47,
-//     A2: 48, B2: 82, C2: 83, D2: 84, E2: 85, F2: 86, G2: 87, H2: 55,
-//     A1: 56, B1: 92, C1: 93, D1: 94, E1: 95, F1: 96, G1: 97, H1: 63,
-// }
-
-var rankDisplay = function (rankIndex) {
-    return 8 - rankIndex;
-}
-
+/*
+* Instantiates a board object
+*/
 function Board() {
     this.board = (function () {
-        let board = [];
-        for (let i = 0; i < 64; i++) {
+        var board = [];
+        for (let i = 0; i < 64; i++) {  //let stays within a block scope
             board[i] = 0;
         }
         for (let i = 48; i <= 55; i++) {
@@ -33,7 +19,8 @@ function Board() {
             board[i] = pieces.bP;
         }
 
-        let rng = function (size) { return Math.floor(Math.random() * size); };
+        //rng: randomly generated number
+        function rng(size) { return Math.floor(Math.random() * size); };
 
         let placement = function (num) {
             let counter = 0;
@@ -654,4 +641,3 @@ function indexOf(file, rank) {
     }
     return (rank * 8 + file);
 }
-

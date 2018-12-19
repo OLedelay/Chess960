@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
         <title>CHESS 960</title>
         <link rel="stylesheet" href="stylesheets/splash.css">
     </head>
@@ -9,7 +10,9 @@
             <section id="left">
                 <h1>CHESS 960</h1>
                 <div id="options">
-                    <button type="submit">setting1</button>
+                  <form method="get" action="/rules">
+                    <button type="submit">Rules</button>
+                  </form>
                     <button type="submit">setting2</button>
                     <button type="submit">setting3</button>
                     <button type="submit">setting4</button>
@@ -21,7 +24,7 @@
             </section>
             <section id="right">
                 <img src="/playbutton.png" width="400" height="400"></img>
-				<form action="/play" method="get">
+				            <form action="/play" method="get">
                             <button type="submit">PLAY</button>
                     </form>
             </section>
