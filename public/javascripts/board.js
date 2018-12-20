@@ -3,10 +3,13 @@ var pieces = {
     bP: 7, bR: 8, bN: 9, bB: 10, bQ: 11, bK: 12
 };
 
+/*
+* Instantiates a board object
+*/
 function Board() {
     this.board = (function () {
         var board = [];
-        for (let i = 0; i < 64; i++) { // let limits to blockscope, var non
+        for (let i = 0; i < 64; i++) {  //let stays within a block scope
             board[i] = 0;
         }
         for (let i = 48; i <= 55; i++) {
@@ -16,6 +19,7 @@ function Board() {
             board[i] = pieces.bP;
         }
 
+        // rng: randomly generated number
         function rng(size) { return Math.floor(Math.random() * size); };
 
         // returns index of (n+1)th empty space on rank 1
@@ -634,4 +638,3 @@ function indexOf(file, rank) {
     }
     return (rank * 8 + file);
 }
-
