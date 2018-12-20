@@ -3,27 +3,10 @@ var pieces = {
     bP: 7, bR: 8, bN: 9, bB: 10, bQ: 11, bK: 12
 };
 
-var piecesGap = 6;
-
-// var position = {
-//     A8: 0, B8: 1, C8: 2, D8: 3, E8: 4, F8: 5, G8: 6, H8: 7,
-//     A7: 8, B7: 9, C7: 10, D7: 11, E7: 12, F7: 13, G7: 14, H7: 15,
-//     A6: 16, B6: 42, C6: 43, D6: 44, E6: 45, F6: 46, G6: 47, H6: 23,
-//     A5: 24, B5: 52, C5: 53, D5: 54, E5: 55, F5: 56, G5: 57, H5: 31,
-//     A4: 32, B4: 62, C4: 63, D4: 64, E4: 65, F4: 66, G4: 67, H4: 39,
-//     A3: 40, B3: 72, C3: 73, D3: 74, E3: 75, F3: 76, G3: 77, H3: 47,
-//     A2: 48, B2: 82, C2: 83, D2: 84, E2: 85, F2: 86, G2: 87, H2: 55,
-//     A1: 56, B1: 92, C1: 93, D1: 94, E1: 95, F1: 96, G1: 97, H1: 63,
-// }
-
-var rankDisplay = function (rankIndex) {
-    return 8 - rankIndex;
-}
-
 function Board() {
     this.board = (function () {
-        let board = [];
-        for (let i = 0; i < 64; i++) {
+        var board = [];
+        for (let i = 0; i < 64; i++) { // let limits to blockscope, var non
             board[i] = 0;
         }
         for (let i = 48; i <= 55; i++) {
@@ -33,10 +16,11 @@ function Board() {
             board[i] = pieces.bP;
         }
 
-        let rng = function (size) { return Math.floor(Math.random() * size); };
+        function rng(size) { return Math.floor(Math.random() * size); };
 
-        let placement = function (num) {
-            let counter = 0;
+        // returns index of (n+1)th empty space on rank 1
+        function placement(num) {
+            var counter = 0;
             for (let i = 56; i < 64; i++) {
                 if (board[i] == 0) {
                     if (num == counter) {
@@ -48,28 +32,26 @@ function Board() {
             return -1;
         }
 
-        let kn1 = placement(rng(8));
+        var kn1 = placement(rng(8));
         board[kn1] = pieces.wN;
-        let kn2 = placement(rng(7));
+        var kn2 = placement(rng(7));
         board[kn2] = pieces.wN;
-        let bish1 = placement(rng(6));
+        var bish1 = placement(rng(6));
         board[bish1] = pieces.wB;
-        let bish2 = placement(rng(5));
+        var bish2 = placement(rng(5));
         board[bish2] = pieces.wB;
-        let quee = placement(rng(4));
+        var quee = placement(rng(4));
         board[quee] = pieces.wQ;
         board[placement(0)] = pieces.wR;
         board[placement(0)] = pieces.wK;
         board[placement(0)] = pieces.wR;
 
         for (i = 0; i <= 7; i++) {
-            board[i] = board[i + 56] + piecesGap;
+            board[i] = board[i + 56] + 6;
         }
 
         return board;
     })();
-
-    this.movesMade = 0;
 
     this.isWhite = function (position) {
         return (this.board[position] > pieces.EMPTY && this.board[position] < pieces.bP);
@@ -80,8 +62,8 @@ function Board() {
 
     // returns whether a given position on the board is safe, given the position and whether the target is white
     this.isSafe = function (pos, isWhite) {
-        // returns a new position given an old position and offsets, returns 0 if offsets are out of bounds
-        let offset = function (position, fileOffset, rankOffset) {
+        // returns a new position given an old position and offsets, returns -1 if offsets are out of bounds
+        function offset(position, fileOffset, rankOffset) {
             let resultFile = fileOf(position) + fileOffset;
             let resultRank = rankOf(position) + rankOffset;
             if (resultFile >= 0 && resultFile < 8 && resultRank >= 0 && resultRank < 8) {
@@ -90,7 +72,7 @@ function Board() {
             return -1;
         }
 
-        let scaryPieces;
+        var scaryPieces;
         if (isWhite) {
             scaryPieces = { Pawn: 7, Rook: 8, Knight: 9, Bishop: 10, Queen: 11, King: 12 }
 
@@ -201,6 +183,8 @@ function Board() {
         return true;
     }
 
+    this.movesMade = 0;
+
     this.validMove = function (oldpos, newpos) {
         this.board[newpos] = this.board[oldpos];
         this.board[oldpos] = pieces.EMPTY;
@@ -210,13 +194,13 @@ function Board() {
     // function to move the piece at a certain position to a new position, returns -1 if the move is invalid
     this.move = function (oldpos, newpos) {
         if (fileOf(newpos) >= 0) {
-            let relativeFile = fileOf(newpos) - fileOf(oldpos);
-            let relativeRank = rankOf(newpos) - rankOf(oldpos);
-            let sameFile = relativeFile == 0;
-            let sameRank = relativeRank == 0;
+            var relativeFile = fileOf(newpos) - fileOf(oldpos);
+            var relativeRank = rankOf(newpos) - rankOf(oldpos);
+            var sameFile = relativeFile == 0;
+            var sameRank = relativeRank == 0;
 
-            let wKPosition = 0;
-            let bKPosition = 0;
+            var wKPosition = -1;
+            var bKPosition = -1;
             for (let i = 0; i <= 63; i++) {
                 let p = this.board[i];
                 if (p == pieces.wK) {
@@ -226,14 +210,14 @@ function Board() {
                     bKPosition = i;
                 }
             }
-            let wKSafe = this.isSafe(wKPosition, true);
-            let bKSafe = this.isSafe(bKPosition, false);
+            var wKSafe = this.isSafe(wKPosition, true);
+            var bKSafe = this.isSafe(bKPosition, false);
 
 
             switch (this.board[oldpos]) {
                 case pieces.wP: // "en passant" not yet implemented
                     if (!this.isWhite(newpos) && wKSafe && this.movesMade % 2 == 0) {
-                        if (relativeRank == -1 && relativeFile >= -1 && relativeFile <= 1) { //newpos is somewhere close in front of oldpos
+                        if (relativeRank == -1 && relativeFile >= -1 && relativeFile <= 1) { // newpos is somewhere close in front of oldpos
                             if (!sameFile && this.isEmpty(newpos)) { // can't diagonally jump to empty
                                 return -1;
                             }
@@ -242,10 +226,10 @@ function Board() {
                             }
                             this.validMove(oldpos, newpos);
                             if (rankOf(newpos) == 0) {
-                                this.board[newpos] == pieces.wQ; //free choice not yet implemented
+                                this.board[newpos] = pieces.wQ; // free choice not yet implemented
                             }
                             return undefined;
-                        } else if (relativeRank == -2 && sameFile && rankOf(oldpos) == 6 && this.isEmpty(newpos)) {
+                        } else if (relativeRank == -2 && sameFile && rankOf(oldpos) == 6 && this.isEmpty(newpos) && this.isEmpty(newpos-8)) {
                             this.validMove(oldpos, newpos);
                             return undefined;
                         }
@@ -253,7 +237,7 @@ function Board() {
                     break;
                 case pieces.bP:
                     if ((this.isWhite(newpos) || this.isEmpty(newpos)) && bKSafe && this.movesMade % 2 == 1) {
-                        if (relativeRank == 1 && relativeFile >= -1 && relativeFile <= 1) { //newpos is somewhere close in front of oldpos
+                        if (relativeRank == 1 && relativeFile >= -1 && relativeFile <= 1) { // newpos is somewhere close in front of oldpos
                             if (!sameFile && this.isEmpty(newpos)) { // can't diagonally jump to empty
                                 return -1;
                             }
@@ -629,10 +613,6 @@ function Board() {
         return -1;
     }
 }
-
-// let baa = new Board();
-// console.log(baa.board.toString())
-
 
 function fileOf(index) {
     if (index < 0 || index > 63) {

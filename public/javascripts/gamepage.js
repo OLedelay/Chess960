@@ -111,11 +111,11 @@ jQuery(document).ready(function ($) {
 			}
 			piece = undefined;
 		} else {
-			if (myBoard.isWhite($(this).attr('data-gridpos')) == amWhite && !myBoard.isEmpty($(this).attr('data-gridpos'))) {
+			// if (myBoard.isWhite($(this).attr('data-gridpos')) == amWhite && !myBoard.isEmpty($(this).attr('data-gridpos'))) {
 				piece = $(this);
 				$(".tile").eq(piece.attr('data-gridpos')).addClass('selected');
 				displayAllowedMoves(piece.attr('data-gridpos'));
-			}
+			// }
 		}
 
 	})
